@@ -9,9 +9,9 @@ jobs:
     name: build-cli
     runs-on: ubuntu-latest
     env: 
-      IMAGE_NAME: <image name>
+      IMAGE_NAME: postgres:14.2
       PROJECT_KEY: nctest
-      CLI_VERSION: <cli version> # Orca CLI version
+      CLI_VERSION: 1.0.3
     
     steps:
     # test checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
