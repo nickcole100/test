@@ -1,0 +1,31 @@
+name: Image Build and Scan
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build-cli:
+    name: build-cli
+    runs-on: ubuntu-latest
+    env: 
+      IMAGE_NAME: <image name>
+      PROJECT_KEY: nctest
+      CLI_VERSION: <cli version> # Orca CLI version
+    
+    steps:
+    # test checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    # Build your docker image, that is going to be scanned in the next step
+    - name: Docker Image Build
+      run: docker build -t $IMAGE_NAME .
+  
+    # Run Orca CLI against the previously created container image
+    - name: Orca CLI - Security Scanning
+      env:
+        ORCA_SECURITY_API_TOKEN: ${{ secrets.ORCA_SECURITY_API_TOKEN }}
+      run: |
+        set +e
+        docker run -e ORCA_SECURITY_API_TOKEN --rm -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/orcasecurity/orca-cli:${CLI_VERSION} -p ${{ secrets.ORCA_API_KEY }} ${PROJECT_KEY} image scan ${IMAGE_NAME}
